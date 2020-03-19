@@ -26,6 +26,8 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
     private TextView txtGetData;
     private String allBoxers;
     
+    private Button btnTransition;
+    
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +45,10 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         edtSpeedPower = findViewById(R.id.edtSpeedPower);
         edtKickPower = findViewById(R.id.edtKickPower);
         txtGetData = findViewById(R.id.txtGetData);
+        
         btnGetAllData = findViewById(R.id.btnGetAllData);
+        
+        btnTransition = findViewById(R.id.btnNextActivity);
         
         txtGetData.setOnClickListener(new View.OnClickListener() {
     
@@ -68,14 +73,18 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                 
                 allBoxers = ""; // Inicializamos la cadena de texto
                 
-                ParseQuery<ParseObject> queryAll = ParseQuery.getQuery("Boxer");
+                ParseQuery<ParseObject> queryAll = ParseQuery.getQuery("Boxer"); // equivale a un SELECT - selección de la clase
+                //queryAll.whereGreaterThan("kick_power", 500); // Añadimos condición where
+                queryAll.whereGreaterThanOrEqualTo("kick_power", 555);
+                queryAll.setLimit(1); // Número máximo de registros
+                
                 queryAll.findInBackground(new FindCallback<ParseObject>() {  // el método findInBackground devuelve varios elementos
                     @Override
                     public void done(List<ParseObject> objects, ParseException e) {
                         if (e==null ) {
                             if (objects.size() > 0) { // Si recibimos al menos un elemento
                                 
-                                for (ParseObject boxer : objects) {
+                                for (ParseObject boxer : objects) { // Recorremos todos los objetos de la lista
                                     allBoxers = allBoxers + "Boxer: " + boxer.get("name") + ". Kick power: " + boxer.get("kick_power") +"." + "\n";
                                 }
                                 FancyToast.makeText(SignUp.this, allBoxers, FancyToast.LENGTH_LONG, FancyToast.SUCCESS, true).show();
@@ -86,6 +95,14 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                         }
                     }
                 });
+            }
+        });
+        
+        btnTransition.setOnClickListener(new View.OnClickListener() {
+    
+            @Override
+            public void onClick(View v) {
+            
             }
         });
     }
