@@ -1,5 +1,6 @@
 package com.davincistudio.instagramclone;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -46,6 +47,10 @@ public class SignUpLoginActivity extends AppCompatActivity {
                     public void done(ParseException e) {
                         if (e==null) {
                             FancyToast.makeText(SignUpLoginActivity.this, appUser.get("username") + "is signed up successfully", FancyToast.LENGTH_LONG, FancyToast.SUCCESS, true).show();
+    
+                            Intent intent = new Intent(SignUpLoginActivity.this, WelcomeActivity.class);
+                            startActivity(intent);
+                        
                         } else {
                             FancyToast.makeText(SignUpLoginActivity.this, "Something went wrong: " + e.getMessage(), FancyToast.LENGTH_LONG, FancyToast.ERROR, true).show();
                         }
@@ -62,6 +67,10 @@ public class SignUpLoginActivity extends AppCompatActivity {
                     public void done(ParseUser user, ParseException e) {
                         if (user != null && e==null) {
                             FancyToast.makeText(SignUpLoginActivity.this, "The user " + user.get("username") + " is logged in successfully", FancyToast.LENGTH_LONG, FancyToast.SUCCESS, true).show();
+                            
+                            Intent intent = new Intent(SignUpLoginActivity.this, WelcomeActivity.class);
+                            startActivity(intent);
+                        
                         } else {
                             FancyToast.makeText(SignUpLoginActivity.this, "Something went wrong: " + e.getMessage(), FancyToast.LENGTH_LONG, FancyToast.ERROR, true).show();
                         }
