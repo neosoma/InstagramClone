@@ -4,19 +4,28 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 import com.shashank.sony.fancytoastlib.FancyToast;
+
+import java.util.List;
 
 public class SignUp extends AppCompatActivity implements View.OnClickListener {
     
     // Nos interesa que los elementos de la interfaz sean privadas
-    private Button btnSaveBoxer;
+    private Button btnSaveBoxer, btnGetAllData;
     private EditText edtName, edtPunchSpeed, edtSpeedPower, edtKickPower;
+    private TextView txtGetData;
+    private String allBoxers;
+    
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +42,52 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         edtPunchSpeed = findViewById(R.id.edtPunchSpeed);
         edtSpeedPower = findViewById(R.id.edtSpeedPower);
         edtKickPower = findViewById(R.id.edtKickPower);
+        txtGetData = findViewById(R.id.txtGetData);
+        btnGetAllData = findViewById(R.id.btnGetAllData);
+        
+        txtGetData.setOnClickListener(new View.OnClickListener() {
+    
+            @Override
+            public void onClick(View v) {
+                ParseQuery<ParseObject> parseQuery = ParseQuery.getQuery("Boxer");
+                parseQuery.getInBackground("72iULSJxMA", new GetCallback<ParseObject>() { // El método getInBackground devuelve un objeto
+                    @Override
+                    public void done(ParseObject object, ParseException e) {
+                        if(object != null && e==null) {
+                            txtGetData.setText(object.get("name") + " with kick power: " + object.get("kick_power")); // el +"" lo convierte en cadena de texto
+                        }
+                    }
+                });
+            }
+        });
+        
+        btnGetAllData.setOnClickListener(new View.OnClickListener() {
+    
+            @Override
+            public void onClick(View v) {
+                
+                allBoxers = ""; // Inicializamos la cadena de texto
+                
+                ParseQuery<ParseObject> queryAll = ParseQuery.getQuery("Boxer");
+                queryAll.findInBackground(new FindCallback<ParseObject>() {  // el método findInBackground devuelve varios elementos
+                    @Override
+                    public void done(List<ParseObject> objects, ParseException e) {
+                        if (e==null ) {
+                            if (objects.size() > 0) { // Si recibimos al menos un elemento
+                                
+                                for (ParseObject boxer : objects) {
+                                    allBoxers = allBoxers + "Boxer: " + boxer.get("name") + ". Kick power: " + boxer.get("kick_power") +"." + "\n";
+                                }
+                                FancyToast.makeText(SignUp.this, allBoxers, FancyToast.LENGTH_LONG, FancyToast.SUCCESS, true).show();
+                                
+                            } else {
+                                FancyToast.makeText(SignUp.this, "Something went wrong: " + e.getMessage(), FancyToast.LENGTH_LONG, FancyToast.ERROR, true).show();
+                            }
+                        }
+                    }
+                });
+            }
+        });
     }
     
     @Override
